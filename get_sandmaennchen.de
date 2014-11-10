@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+
+#
+# Download today's Sandmännchen series movie.
+#
+# -- Jan-Benedict Glaw  <jbglaw@lug-owl.de>
+#
+
+#
+# Get file name
+#
+T1="`tempfile`"
+wget -q -O "${T1}" "http://www.kikaninchen.de/kikaninchen/filme/unsersandmaennchen/sandmann100-flashXml.xml"
+DOWNLOAD_FILENAME="`xml2 < "${T1}" | grep fileName | grep '\.mp4' | cut -f 2 -d = | head -1`"
+rm -- "${T1}"
+echo "${DOWNLOAD_FILENAME}"
+
+#
+# Get RTMP server IP address
+#
+T2="`tempfile`"
+wget -q -O "${T2}" "http://www.kikaplus.net/clients/kika/common/public/config/server.xml"
+SERVER_IP="`xml2 < "${T2}" | grep '/servers/server/ip=' | sort | uniq | sort -R | cut -f 2 -d '='`"
+rm -- "${T2}"
+echo "${SERVER_IP}"
+
+#
+# Get title
+#
+TIME="`date '+%H%M' | sed -e 's/^0*//'`"
+[ -z "${TIME}" ] && TIME=0
+if [ "${TIME}" -lt 1850 ]; then
+	THE_DAY="`date --date='1 day ago' '+%Y%m%d'`"
+else
+	THE_DAY="`date '+%Y%m%d'`"
+fi
+T3="`tempfile`"
+wget -q -O "${T3}" "http://www.kika.de/scripts/fernsehen/was_laeuft/index.cfm?d=${THE_DAY}16"
+TITLE="`cat "${T3}" | tr -d $'\n'$'\r' |tr '>' $'\n' | grep -A10 '^Unser Sand' | grep '/p$' | sed -e 's#</p##' | LC_ALL=C sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | iconv -f iso-8859-15 -t UTF-8`"
+rm -- "${T3}"
+printf '>%s<\n' "${TITLE}"
+
+#
+# Download file
+#
+for IP in ${SERVER_IP}; do
+	timeout 3600 rtmpdump	-r "rtmp://${IP}/vod"								\
+				-a "vod"									\
+				--live										\
+				-f "LNX 11,2,202,291"								\
+				-W "http://www.kikaninchen.de/kikaninchen/controlflash100.swf?version=21756"	\
+				-p "http://www.kikaninchen.de/kikaninchen/index.html"				\
+				-y "mp4:${DOWNLOAD_FILENAME}"							\
+				-o "${THE_DAY}---${TITLE}.mp4"
+	[ $? -eq 0 ] && break
+done

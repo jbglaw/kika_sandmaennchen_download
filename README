@@ -1,0 +1,22 @@
+What's it?
+~~~~~~~~~~
+This small script will download the daily episode of "Unser Sandmann",
+a famous show for young childreen just before going to bed.
+
+Each day, a new episode will be broadcasted. It's available online starting
+at around 18:50 o'clock (CET/CEST), but only for one day, until the next
+episode is published.
+
+Prerequisites?
+~~~~~~~~~~~~~~
+You need to have these programs installed:
+
+	- wget
+	- timeout
+	- rtmpdump
+
+Usage?
+~~~~~~
+Just invoke it. It'll try to download the episode currently available
+online. It's placed into a file (in your current working directory)
+and prefixed with the date of publication.
