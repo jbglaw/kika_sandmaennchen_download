@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
 #
-# Download today's Sandmännchen series movie.
+# Download today's Sandmännchen series movie. Should be invoked
+# between 7 and 12 PM, after the daily movie finished.
 #
 # -- Jan-Benedict Glaw  <jbglaw@lug-owl.de>
 #
@@ -29,14 +30,10 @@ echo "${SERVER_IP}"
 #
 TIME="`date '+%H%M' | sed -e 's/^0*//'`"
 [ -z "${TIME}" ] && TIME=0
-if [ "${TIME}" -lt 1850 ]; then
-	THE_DAY="`date --date='1 day ago' '+%Y%m%d'`"
-else
-	THE_DAY="`date '+%Y%m%d'`"
-fi
+[ "${TIME}" -lt 1900 ] && echo 'W A R N I N G ! ! !   Filename will be wrong!' >&2
 T3="`tempfile`"
-wget -q -O "${T3}" "http://www.kika.de/scripts/fernsehen/was_laeuft/index.cfm?d=${THE_DAY}16"
-TITLE="`cat "${T3}" | tr -d $'\n'$'\r' |tr '>' $'\n' | grep -A10 '^Unser Sand' | grep '/p$' | sed -e 's#</p##' | LC_ALL=C sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | iconv -f iso-8859-15 -t UTF-8`"
+wget -q -O "${T3}" "http://www.kika.de/sendungen/ipg/index.html"
+TITLE="`egrep '(Unser Sandm|span class="desc)' "${T3}" | grep -A1 'Unser Sand' | grep 'span class="desc"' | cut -f 2 -d '>' | cut -f 1 -d '<' | iconv -f iso-8859-15 -t UTF-8`"
 rm -- "${T3}"
 printf '>%s<\n' "${TITLE}"
 
