@@ -1,0 +1,6 @@
+2014-11-17  Jan-Benedict Glaw  <jbglaw@lug-owl.de>
+
+	* get_sandmaennchen.de: Move to...
+	* get_sandmaennchen.sh: here.
+	(TITLE): CMS seems to supply German Umlauts in UTF-8, don't convert
+	these again.
