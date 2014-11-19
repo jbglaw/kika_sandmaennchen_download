@@ -1,3 +1,8 @@
+2014-11-19  Sebastian Hammerl  <github@omoco.de>
+
+	* get_sandmaennchen.sh (TITLE): Corrected file name, now including date
+	again.
+
 2014-11-17  Jan-Benedict Glaw  <jbglaw@lug-owl.de>
 
 	* get_sandmaennchen.de: Move to...
