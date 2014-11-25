@@ -38,7 +38,7 @@ else
 fi
 T3="`tempfile`"
 wget -q -O "${T3}" "http://www.kika.de/sendungen/ipg/index.html"
-TITLE="`egrep '(Unser Sandm|span class="desc)' "${T3}" | grep -A1 'Unser Sand' | grep 'span class="desc"' | cut -f 2 -d '>' | cut -f 1 -d '<'`"
+TITLE="`egrep '(Unser Sandm|span class="desc)' "${T3}" | grep -A1 'Unser Sand' | grep 'span class="desc"' | cut -f 2 -d '>' | cut -f 1 -d '<' | sed -e 's/&amp;/\&/g'`"
 rm -- "${T3}"
 printf '>%s<\n' "${TITLE}"
 
