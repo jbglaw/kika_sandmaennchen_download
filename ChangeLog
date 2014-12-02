@@ -1,3 +1,8 @@
+2014-12-02  Jan-Benedict Glaw  <jbglaw@lug-owl.de>
+
+	* get_sandmaennchen.sh (TITLE): Use yesterday's title if it's
+	past midnight.
+
 2014-11-25  Jan-Benedict Glaw  <jbglaw@lug-owl.de>
 
 	* get_sandmaennchen.sh (TITLE): Update to convert '&amp;'

@@ -30,14 +30,18 @@ echo "${SERVER_IP}"
 #
 TIME="`date '+%H%M' | sed -e 's/^0*//'`"
 [ -z "${TIME}" ] && TIME=0
-[ "${TIME}" -lt 1900 ] && echo 'W A R N I N G ! ! !   Filename will be wrong!' >&2
 if [ "${TIME}" -lt 1850 ]; then
 	THE_DAY="`date --date='1 day ago' '+%Y%m%d'`"
+	THE_DAY_FOR_GREP="`date --date='1 day ago' '+%d%m%Y'`"
 else
 	THE_DAY="`date '+%Y%m%d'`"
 fi
 T3="`tempfile`"
 wget -q -O "${T3}" "http://www.kika.de/sendungen/ipg/index.html"
+if [ "${TIME}" -lt 1850 ]; then
+	FILEPATH="`grep 'a.*href.*sendungen.*ipg.*_date-'"${THE_DAY_FOR_GREP}"'.*html' "${T3}" | cut -f 2 -d '"'`"
+	wget -q -O "${T3}" "http://www.kika.de${FILEPATH}"
+fi
 TITLE="`egrep '(Unser Sandm|span class="desc)' "${T3}" | grep -A1 'Unser Sand' | grep 'span class="desc"' | cut -f 2 -d '>' | cut -f 1 -d '<' | sed -e 's/&amp;/\&/g'`"
 rm -- "${T3}"
 printf '>%s<\n' "${TITLE}"
